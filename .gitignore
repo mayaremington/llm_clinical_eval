@@ -1,1 +1,10 @@
 .venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+.DS_Store
+
+
+annotation/demo/
+outputs/mock_notes.jsonl
