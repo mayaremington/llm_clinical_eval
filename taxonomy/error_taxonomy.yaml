@@ -1,0 +1,145 @@
+# Clinical error taxonomy for AI-generated notes
+# Single source of truth: both the annotation tool and judge prompt read this file
+ 
+version: 1.0
+ 
+classification_rules:
+  - Log one error per distinct fact. If the same wrong fact appears in more than
+    one place in the note (e.g., in MEDICATIONS and in the plan), log it once.
+  - Assign the most specific applicable category. Do not also label an error
+    as HALLUCINATION when it is fully captured by NEGATION, NUMERIC_MED,
+    MISATTRIBUTION, LATERALITY_LOCATION, TEMPORAL, or CERTAINTY.
+  - HALLUCINATION is reserved for unsupported content that does not fit a
+    more specific factual-error category.
+  - When the note replaces a correct value with a wrong one, log a single error
+    in the specific category (e.g., 25 mg documented as 50 mg is one NUMERIC_MED
+    error). Do not also log an OMISSION for the correct value or a HALLUCINATION
+    for the wrong one.
+  - Durations, onset, sequence, and dates go to TEMPORAL even when they are
+    numbers. NUMERIC_MED covers medications, doses, vital signs, lab values, and
+    other measurements.
+  - A finding or diagnosis stated as absent or excluded but documented as present
+    (or the reverse) is NEGATION. A diagnosis stated as possible, suspected, or
+    under evaluation but documented as confirmed (or the reverse) is CERTAINTY.
+  - A diagnosis that was never mentioned in the transcript is HALLUCINATION. A
+    diagnosis that was mentioned but documented with the wrong level of certainty
+    is CERTAINTY.
+ 
+categories:
+  - code: HALLUCINATION
+    name: Hallucination / fabrication
+    definition: >
+      The note states a finding, symptom, history item, medication, allergy, exam
+      finding, result, diagnosis, or plan that is not supported by the transcript.
+    examples:
+      - "Note documents 'lungs clear to auscultation' but no lung exam was spoken."
+      - "Note lists 'no known drug allergies' when allergies were never discussed."
+    not_this: >
+      A reasonable summary or paraphrase of something that was said. Standard
+      boilerplate that is true by construction (e.g., 'patient seen in clinic').
+ 
+  - code: OMISSION
+    name: Omission
+    definition: >
+      Clinically relevant information stated in the transcript is absent from the
+      note. Count only information that is important for understanding the
+      presenting problem, assessment, treatment, safety, follow-up, or another
+      documented clinical decision.
+    examples:
+      - "Patient says they take apixaban; note has no anticoagulant listed in a GI bleed visit."
+      - "Doctor orders blood cultures; plan does not mention them."
+    not_this: >
+      Small talk or conversational filler, repeated statements, immaterial detail,
+      or information that can be omitted without changing a clinician's
+      understanding of the encounter. A correct value replaced by a wrong one is
+      not an omission (see classification rules).
+ 
+  - code: NEGATION
+    name: Negation / polarity error
+    definition: >
+      A finding or diagnosis is documented with the wrong polarity (present vs
+      absent, positive vs negative, ruled in vs ruled out).
+    examples:
+      - "Patient denies fever; note says 'reports fever'."
+      - "'PE ruled out by CT' documented as 'pulmonary embolism'."
+ 
+  - code: NUMERIC_MED
+    name: Numeric or medication error
+    definition: >
+      Wrong medication name, number, unit, dose, frequency, or route; or wrong vital
+      sign, lab value, or other quantitative clinical measurement.
+    examples:
+      - "Metoprolol 25 mg twice daily documented as 50 mg daily."
+      - "Paroxetine documented as fluoxetine."
+      - "BP 118/72 documented as BP 180/72."
+    not_this: Wrong durations, onset, or dates. Those are TEMPORAL.
+ 
+  - code: MISATTRIBUTION
+    name: Misattribution / wrong source or subject
+    definition: >
+      Information attributed to the wrong person (patient vs family member vs
+      clinician), or a family member's history recorded as the patient's.
+    examples:
+      - "Father's MI at age 50 documented as patient's own cardiac history."
+ 
+  - code: LATERALITY_LOCATION
+    name: Laterality or anatomical location error
+    definition: Wrong side, site, or anatomical location.
+    examples:
+      - "Left ankle injury documented as right ankle."
+ 
+  - code: TEMPORAL
+    name: Timeline or correction error
+    definition: >
+      Wrong symptom duration, onset, sequence, dates, or timing; or the note keeps
+      a statement that was later corrected in the conversation.
+    examples:
+      - "Patient corrects onset from 'this morning' to 'last night at 11'; note says this morning."
+      - "Pain for 3 weeks documented as 3 days."
+ 
+  - code: CERTAINTY
+    name: Diagnostic certainty / uncertainty error
+    definition: >
+      The note changes the degree of diagnostic certainty, such as converting a
+      possible, suspected, or differential diagnosis, or one still under
+      evaluation, into a confirmed diagnosis, or vice versa.
+    examples:
+      - "'Concern for possible pneumonia' documented as 'pneumonia'."
+      - "'Rule out PE' (workup ordered) documented as 'pulmonary embolism'."
+      - "Confirmed influenza documented only as 'possible influenza'."
+    not_this: >
+      A diagnosis stated as excluded but documented as present (NEGATION), or a
+      diagnosis never mentioned in the transcript (HALLUCINATION).
+ 
+  - code: SECTION
+    name: Wrong section / structure
+    definition: >
+      Content is correct but placed in a section that changes its meaning, e.g.,
+      a patient-reported symptom recorded as an exam finding, or a medication
+      recommendation placed under current medications.
+    examples:
+      - "'Patient says his ankle looks swollen' recorded under PHYSICAL EXAM as 'ankle swelling'."
+      - "Newly prescribed amoxicillin listed under current MEDICATIONS as if the patient already takes it."
+ 
+  - code: OTHER
+    name: Other
+    definition: A clinically meaningful problem not covered above. Describe it in the comment.
+ 
+severity:
+  - level: 1
+    name: Minor
+    definition: >
+      Reduces documentation accuracy, but would not be expected to affect clinical
+      management or patient safety, or to materially affect billing/coding.
+  - level: 2
+    name: Moderate
+    definition: >
+      Misleading or would need correction before signing; could affect billing/coding
+      or a later reader's understanding, but unlikely to change immediate management.
+  - level: 3
+    name: Major
+    definition: >
+      Could plausibly change clinical management or cause patient harm if the note
+      were signed as written (e.g., wrong anticoagulant status, wrong dose, fabricated
+      allergy, missed red-flag symptom, wrong side for a procedure).
+ 
