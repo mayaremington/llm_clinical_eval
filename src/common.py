@@ -31,6 +31,8 @@ def taxonomy_as_text() -> str:
     """Render the taxonomy for inclusion in the judge prompt."""
     tax = load_taxonomy()
     lines = ["Categories:"]
+    if tax.get("classification_rules"):
+        lines = ["Classification rules:"] + [f"- {r}" for r in tax["classification_rules"]] + [""] + lines
     for c in tax["categories"]:
         lines.append(f"- {c['code']}: {c['definition'].strip()}")
         if c.get("not_this"):
