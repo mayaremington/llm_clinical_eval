@@ -18,6 +18,9 @@ from datetime import datetime, timezone
 from .common import ROOT, append_jsonl, load_config, load_encounters, read_jsonl, resolve
 from .llm import complete
 
+# stop/finish reasons that mean the model ran out of output tokens mid-note
+TRUNCATED = {"max_tokens", "length"}
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -40,6 +43,7 @@ def main() -> None:
     print(f"{len(enc)} encounters x {len(cfg['systems'])} systems; {len(todo)} notes to generate")
 
     templates: dict[str, str] = {}
+    n_cut = 0
 
     def tpl(path: str) -> str:
         return templates.setdefault(path, (ROOT / path).read_text())
@@ -52,6 +56,7 @@ def main() -> None:
             "system": sys["name"], "provider": provider, "model": sys["model"], "prompt_file": sys["prompt"],
             "encounter_id": e.encounter_id, "source": e.source, "note": r["text"],
             "input_tokens": r["input_tokens"], "output_tokens": r["output_tokens"], "latency_s": r["latency_s"],
+            "stop_reason": r["stop_reason"],
         }
         if sys.get("verify_prompt"):
             v = complete(provider, sys["model"],
@@ -62,11 +67,19 @@ def main() -> None:
                 "input_tokens": (r["input_tokens"] or 0) + (v["input_tokens"] or 0) if r["input_tokens"] is not None else None,
                 "output_tokens": (r["output_tokens"] or 0) + (v["output_tokens"] or 0) if r["output_tokens"] is not None else None,
                 "latency_s": round(r["latency_s"] + v["latency_s"], 2),
+                "draft_stop_reason": r["stop_reason"], "stop_reason": v["stop_reason"],
             })
         rec["created_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         append_jsonl(out_path, rec)
-        print(f"[{i}/{len(todo)}] {sys['name']} {e.encounter_id} ({rec['latency_s']}s)")
+        flag = ""
+        if rec.get("stop_reason") in TRUNCATED or rec.get("draft_stop_reason") in TRUNCATED:
+            n_cut += 1
+            flag = "  <-- TRUNCATED: hit max_tokens"
+        print(f"[{i}/{len(todo)}] {sys['name']} {e.encounter_id} ({rec['latency_s']}s){flag}")
     print(f"Done. Notes in {out_path}")
+    if n_cut:
+        print(f"WARNING: {n_cut} note(s) were cut off at max_tokens. Raise generation.max_tokens in "
+              f"config.yaml, delete {out_path.name}, and re-run.")
 
 
 if __name__ == "__main__":

@@ -15,13 +15,15 @@ import random
 import re
 import time
 
+
 # Errors that will never fix themselves on retry (bugs, missing packages, bad
 # arguments). These stop immediately instead of retrying.
 _PERMANENT = (ImportError, TypeError, ValueError, KeyError, AttributeError)
 
+
 def complete(provider: str, model: str, prompt: str, *, temperature: float | None = None,
              max_tokens: int = 2000, base_url: str | None = None, retries: int = 4) -> dict:
-    """Return {"text": str, "input_tokens": int|None, "output_tokens": int|None, "latency_s": float}.
+    """Return {"text", "input_tokens", "output_tokens", "stop_reason", "latency_s"}.
 
     temperature=None means "use the provider's default". Some current models (e.g. recent
     Claude models and OpenAI reasoning models) do not accept a temperature setting.
@@ -30,12 +32,12 @@ def complete(provider: str, model: str, prompt: str, *, temperature: float | Non
     for attempt in range(retries):
         t0 = time.time()
         try:
-            text, tin, tout = _call(provider, model, prompt, temperature, max_tokens, base_url)
-            return {"text": text, "input_tokens": tin, "output_tokens": tout,
+            text, tin, tout, stop = _call(provider, model, prompt, temperature, max_tokens, base_url)
+            return {"text": text, "input_tokens": tin, "output_tokens": tout, "stop_reason": stop,
                     "latency_s": round(time.time() - t0, 2)}
         except _PERMANENT:
             raise
-        except Exception as e:  # noqa: BLE001 - retry on any transient API error
+        except Exception as e:  # noqa: BLE001 - retry on transient API errors (rate limits, timeouts)
             last_err = e
             wait = 2 ** attempt + random.random()
             print(f"  [{provider}:{model}] error: {e!r}; retrying in {wait:.1f}s")
@@ -53,7 +55,7 @@ def _call(provider, model, prompt, temperature, max_tokens, base_url):
             kwargs["temperature"] = temperature
         r = client.messages.create(**kwargs)
         text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
-        return text, r.usage.input_tokens, r.usage.output_tokens
+        return text, r.usage.input_tokens, r.usage.output_tokens, getattr(r, "stop_reason", None)
 
     if provider in ("openai", "openai_compatible"):
         from openai import OpenAI
@@ -69,10 +71,11 @@ def _call(provider, model, prompt, temperature, max_tokens, base_url):
             req["temperature"] = temperature
         r = client.chat.completions.create(**req)
         u = r.usage
-        return r.choices[0].message.content, getattr(u, "prompt_tokens", None), getattr(u, "completion_tokens", None)
+        return (r.choices[0].message.content, getattr(u, "prompt_tokens", None),
+                getattr(u, "completion_tokens", None), getattr(r.choices[0], "finish_reason", None))
 
     if provider == "mock":
-        return _mock(model, prompt), None, None
+        return _mock(model, prompt), None, None, "end_turn"
 
     raise ValueError(f"Unknown provider: {provider}")
 
