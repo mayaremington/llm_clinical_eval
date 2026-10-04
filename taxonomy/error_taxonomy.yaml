@@ -79,8 +79,15 @@ categories:
     definition: >
       Information attributed to the wrong person (patient vs family member vs
       clinician), or a family member's history recorded as the patient's.
+      A statement with no named source is not an error by default. Leaving out
+      the source counts as MISATTRIBUTION only when the source matters clinically:
+      (1) the patient is an unreliable historian (e.g., confused, aphasic,
+      intoxicated, or a child), so the history came from someone else; or
+      (2) a family member contradicts or corrects what the patient said.
     examples:
       - "Father's MI at age 50 documented as patient's own cardiac history."
+      - "Daughter reports fever to 102; note says 'patient reports fever to 102'."
+      - "Confused patient; history given by daughter is documented with no source, implying the patient gave it."
  
   - code: LATERALITY_LOCATION
     name: Laterality or anatomical location error
