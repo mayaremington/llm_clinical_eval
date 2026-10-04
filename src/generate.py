@@ -34,7 +34,7 @@ def main() -> None:
     out_path = resolve(args.out)
     done = {(r["system"], r["encounter_id"]) for r in read_jsonl(out_path)}
     gen = cfg.get("generation", {})
-    kw = {"temperature": gen.get("temperature", 0.0), "max_tokens": gen.get("max_tokens", 2000)}
+    kw = {"temperature": gen.get("temperature"), "max_tokens": gen.get("max_tokens", 2000)}
 
     todo = [(s, e) for s in cfg["systems"] for e in enc.itertuples() if (s["name"], e.encounter_id) not in done]
     print(f"{len(enc)} encounters x {len(cfg['systems'])} systems; {len(todo)} notes to generate")

@@ -15,10 +15,17 @@ import random
 import re
 import time
 
+# Errors that will never fix themselves on retry (bugs, missing packages, bad
+# arguments). These stop immediately instead of retrying.
+_PERMANENT = (ImportError, TypeError, ValueError, KeyError, AttributeError)
 
-def complete(provider: str, model: str, prompt: str, *, temperature: float = 0.0,
+def complete(provider: str, model: str, prompt: str, *, temperature: float | None = None,
              max_tokens: int = 2000, base_url: str | None = None, retries: int = 4) -> dict:
-    """Return {"text": str, "input_tokens": int|None, "output_tokens": int|None, "latency_s": float}."""
+    """Return {"text": str, "input_tokens": int|None, "output_tokens": int|None, "latency_s": float}.
+
+    temperature=None means "use the provider's default". Some current models (e.g. recent
+    Claude models and OpenAI reasoning models) do not accept a temperature setting.
+    """
     last_err = None
     for attempt in range(retries):
         t0 = time.time()
@@ -26,6 +33,8 @@ def complete(provider: str, model: str, prompt: str, *, temperature: float = 0.0
             text, tin, tout = _call(provider, model, prompt, temperature, max_tokens, base_url)
             return {"text": text, "input_tokens": tin, "output_tokens": tout,
                     "latency_s": round(time.time() - t0, 2)}
+        except _PERMANENT:
+            raise
         except Exception as e:  # noqa: BLE001 - retry on any transient API error
             last_err = e
             wait = 2 ** attempt + random.random()
@@ -38,8 +47,11 @@ def _call(provider, model, prompt, temperature, max_tokens, base_url):
     if provider == "anthropic":
         import anthropic
         client = anthropic.Anthropic()
-        r = client.messages.create(model=model, max_tokens=max_tokens, temperature=temperature,
-                                   messages=[{"role": "user", "content": prompt}])
+        kwargs = {"model": model, "max_tokens": max_tokens,
+                  "messages": [{"role": "user", "content": prompt}]}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        r = client.messages.create(**kwargs)
         text = "".join(b.text for b in r.content if getattr(b, "type", "") == "text")
         return text, r.usage.input_tokens, r.usage.output_tokens
 
@@ -50,8 +62,12 @@ def _call(provider, model, prompt, temperature, max_tokens, base_url):
             kwargs["base_url"] = base_url
             kwargs["api_key"] = os.environ.get("OPENAI_API_KEY", "not-needed-for-local")
         client = OpenAI(**kwargs)
-        r = client.chat.completions.create(model=model, temperature=temperature, max_tokens=max_tokens,
-                                           messages=[{"role": "user", "content": prompt}])
+        req = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+        # Current OpenAI models use max_completion_tokens; local OpenAI-style servers expect max_tokens.
+        req["max_completion_tokens" if provider == "openai" else "max_tokens"] = max_tokens
+        if temperature is not None:
+            req["temperature"] = temperature
+        r = client.chat.completions.create(**req)
         u = r.usage
         return r.choices[0].message.content, getattr(u, "prompt_tokens", None), getattr(u, "completion_tokens", None)
 

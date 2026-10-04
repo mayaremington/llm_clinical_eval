@@ -57,7 +57,7 @@ def main() -> None:
         provider = "mock" if args.mock else jc["provider"]
         errors, status, raw = [], "ok", ""
         for attempt in range(2):
-            r = complete(provider, jc["model"], prompt, temperature=jc.get("temperature", 0.0),
+            r = complete(provider, jc["model"], prompt, temperature=jc.get("temperature"),
                          max_tokens=jc.get("max_tokens", 3000), base_url=jc.get("base_url"))
             raw = r["text"]
             try:
