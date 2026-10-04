@@ -1,0 +1,47 @@
+# Encounters: ACI-Bench test split 1 (40 encounters, CC BY 4.0) plus 8 synthetic ED cases.
+data:
+  aci_bench_csv: data/aci_bench/clinicalnlp_taskB_test1.csv
+  aci_bench_n: null          # null = all 40. Set e.g. 30 to cut annotation time.
+  synthetic_ed_yaml: data/synthetic_ed/ed_cases.yaml
+  seed: 13
+
+# Systems under test. Same model in every system.
+# 2 systems x 48 encounters = 96 notes, about 5 hours of annotation.
+#
+# provider: anthropic | openai | openai_compatible | mock
+#   - openai_compatible works with any OpenAI-style API via base_url (Together, Groq, vLLM...)
+#   - mock needs no API key; use it to dry-run the whole pipeline.
+# Model names change often: check your provider's current model list.
+systems:
+  - name: baseline
+    provider: anthropic
+    model: claude-sonnet-5-5
+    prompt: prompts/note_baseline.txt
+  - name: grounded
+    provider: anthropic
+    model: claude-sonnet-5-5
+    prompt: prompts/note_safety_rules.txt
+
+generation:
+  temperature: 0.0
+  max_tokens: 2000
+
+# The judge. Uses a different model family from the one that writes the notes,
+# to reduce self-preference bias.
+judge:
+  provider: anthropic
+  model: claude-opus-5-5
+  prompt: prompts/judge.txt
+  temperature: 0.0
+  max_tokens: 3000
+
+# Pre-specified decision rule. Committed BEFORE looking at any results.
+decision:
+  primary_endpoint: any_major      # per-note binary: note has >=1 severity-3 error
+  reference_system: baseline
+  candidate_system: grounded
+  # superiority:     candidate has a LOWER major-error rate (CI upper bound < 0)
+  # noninferiority:  candidate is at most `noninferiority_margin` worse (CI upper bound < margin)
+  hypothesis: superiority
+  noninferiority_margin: 0.10
+  alpha: 0.05                         # one-sided -> 90% two-sided CI
