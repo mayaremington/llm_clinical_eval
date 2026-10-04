@@ -1,0 +1,11 @@
+#pandas>=2.0
+numpy
+scipy
+scikit-learn
+matplotlib
+pyyaml
+jupyterlab
+anthropic
+openai
+rouge-score
+# optional, slow on CPU:  pip install bert-score torch
