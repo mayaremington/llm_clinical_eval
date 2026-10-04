@@ -1,0 +1,259 @@
+# Synthetic ED encounters with deliberate traps.
+# Written for this project; contain no real patient data.
+# Each trap is a specific check the annotator marks pass/fail for every system.
+
+- id: ED01
+  title: Chest pain with corrected onset and family history from spouse
+  dialogue: |
+    [doctor] hi, i'm doctor reyes, i'm one of the emergency physicians. what brings you in tonight?
+    [patient] i've had this pressure in my chest. it started this morning when i was shoveling. actually no, wait, it started last night around eleven, i was watching tv. this morning it just came back worse.
+    [doctor] okay, so first started last night around eleven at rest, and came back worse this morning with exertion.
+    [patient] yeah, that's right.
+    [doctor] does the pressure go anywhere, like your arm, jaw, or back?
+    [patient] no, it doesn't go to my arm or anything. it just sits right here in the middle.
+    [doctor] any shortness of breath, sweating, nausea?
+    [patient] i was sweaty this morning. no nausea. a little short of breath when i was shoveling.
+    [doctor] do you still have the pain?
+    [patient] yes, although its slightly better. right now it's like a three out of ten.
+    [doctor] any heart problems in the past?
+    [patient] no, just high blood pressure and cholesterol.
+    [wife] his dad had a heart attack at fifty. and his brother had stents put in last year.
+    [doctor] thank you, that's helpful. what medications are you taking?
+    [patient] metoprolol, twenty five milligrams, twice a day. atorvastatin forty at night. and i take a baby aspirin.
+    [doctor] any allergies to medications?
+    [patient] penicillin. i get a rash.
+    [doctor] do you smoke?
+    [patient] i quit about ten years ago.
+    [wife] he still vapes, though.
+    [patient] okay, yes, i vape sometimes.
+    [doctor] so your blood pressure here is one fifty eight over ninety two, heart rate eighty four, oxygen ninety seven percent. on exam your lungs are clear, heart is regular without murmurs, and pressing on your chest doesn't reproduce the pain.
+    [doctor] i'm concerned this could be your heart, so we'll get an ekg right now, a troponin, and a repeat troponin in a few hours, and a chest x-ray. did you already took your aspirin today?
+    [patient] yes, this morning.
+    [doctor] okay, then no extra aspirin for now. i'll be back once the ekg is done.
+  traps:
+    - {id: ED01-T1, category: TEMPORAL, check: "Onset documented as last night ~11 pm at rest (not this morning), with recurrence this morning on exertion"}
+    - {id: ED01-T2, category: NEGATION, check: "Documents NO radiation of pain"}
+    - {id: ED01-T3, category: MISATTRIBUTION, check: "Father's MI at 50 and brother's stents documented as FAMILY history, not patient's own"}
+    - {id: ED01-T4, category: NUMERIC_MED, check: "Metoprolol 25 mg twice daily; atorvastatin 40 mg nightly; aspirin 81 mg ('baby aspirin') daily"}
+    - {id: ED01-T5, category: OMISSION, check: "Penicillin allergy (rash) documented"}
+    - {id: ED01-T6, category: OMISSION, check: "Current vaping documented (source: wife, confirmed by patient); former smoker"}
+    - {id: ED01-T7, category: HALLUCINATION, check: "No ECG or troponin RESULTS invented (only ordered)"}
+    - {id: ED01-T8, category: CERTAINTY, check: "Cardiac cause documented as possible / concern for / rule out ACS, NOT as a confirmed ACS, MI or unstable angina diagnosis"}
+
+- id: ED02
+  title: Possible urosepsis in an older adult, history from daughter
+  dialogue: |
+    [doctor] hi, i'm doctor patel. are you mrs. okafor's daughter?
+    [daughter] yes, i'm her daughter, grace. my mom's been really confused since yesterday. she's normally sharp as a tack, she does her own finances.
+    [doctor] thank you. mrs. okafor, how are you feeling?
+    [patient] tired. it burns when i pee.
+    [doctor] how long has the burning been going on?
+    [patient] three or four days.
+    [daughter] she had a fever last night, a hundred and two. i gave her tylenol at about ten pm.
+    [doctor] any cough or trouble breathing?
+    [daughter] no cough. she's been breathing fine.
+    [doctor] any belly pain, back pain, vomiting?
+    [patient] my back hurts a little on this side.
+    [doctor] you're pointing to your right lower back?
+    [patient] yes.
+    [doctor] any vomiting?
+    [daughter] she threw up once this morning.
+    [doctor] what medications does she take?
+    [daughter] metformin five hundred twice a day, lisinopril ten once a day, and she's supposed to take donepezil but she hasn't been on it for months.
+    [doctor] okay. and any allergies?
+    [daughter] sulfa drugs. she swelled up once.
+    [daughter] sorry, also, do you know where i should move my car? i'm in the fifteen minute spot.
+    [doctor] the front desk can give you a parking pass.
+    [doctor] her vitals: temperature thirty eight point nine, heart rate one eighteen, blood pressure ninety two over fifty eight, breathing twenty four times a minute, oxygen ninety three percent on room air.
+    [doctor] on exam she's oriented to person only, not to place or time. she has tenderness over the right costovertebral angle. lungs are clear.
+    [doctor] i'm worried about a kidney infection that has spread to her blood, what we call sepsis. we're going to draw blood cultures, a lactate, basic labs, and a urine test, give iv fluids, thirty milliliters per kilogram, and start iv antibiotics, ceftriaxone, after the cultures are drawn. we'll hold her metformin and lisinopril for now.
+  traps:
+    - {id: ED02-T1, category: MISATTRIBUTION, check: "Baseline mental status, current confusion, and fever history attributed to daughter as source"}
+    - {id: ED02-T2, category: OMISSION, check: "Baseline cognition (normally independent, manages finances) documented; acute change since yesterday"}
+    - {id: ED02-T3, category: LATERALITY_LOCATION, check: "RIGHT flank / right CVA tenderness"}
+    - {id: ED02-T4, category: NEGATION, check: "No cough / no respiratory symptoms documented correctly"}
+    - {id: ED02-T5, category: NUMERIC_MED, check: "All vitals exact: T 38.9, HR 118, BP 92/58, RR 24, SpO2 93% RA"}
+    - {id: ED02-T6, category: OMISSION, check: "Sulfa allergy (swelling) documented"}
+    - {id: ED02-T7, category: HALLUCINATION, check: "Donepezil NOT listed as an active medication (not taken for months)"}
+    - {id: ED02-T8, category: OMISSION, check: "Plan includes cultures BEFORE antibiotics, lactate, 30 mL/kg iv fluids, ceftriaxone, holding metformin and lisinopril"}
+    - {id: ED02-T9, category: OTHER, check: "Parking conversation excluded"}
+    - {id: ED02-T10, category: CERTAINTY, check: "Urinary source documented as suspected (e.g., suspected pyelonephritis / urosepsis); NOT confirmed pyelonephritis or confirmed bacteremia (urine test and blood cultures pending)"}
+
+- id: ED03
+  title: Ankle injury with laterality trap and old contralateral injury
+  dialogue: |
+    [doctor] hey there, what happened?
+    [patient] i rolled my left ankle playing basketball about two hours ago. i came down on someone's foot.
+    [doctor] did it roll in or out?
+    [patient] the foot went inward, like the bottom of my foot faced in.
+    [doctor] were you able to walk on it afterward?
+    [patient] i could take a couple steps but it really hurt. i hopped to the car.
+    [doctor] any numbness or tingling in your foot?
+    [patient] no.
+    [doctor] any other injuries?
+    [patient] no. i mean, my right wrist is kind of weak but that's from when i broke it in college. it's not new.
+    [doctor] got it. when was your last tetanus shot?
+    [patient] no idea. maybe ten years? more?
+    [doctor] any medical problems or medications?
+    [patient] no, nothing. no allergies.
+    [doctor] okay, let me take a look. there's swelling over the outside of your left ankle. you're tender at the back edge of the lateral malleolus, the bone on the outside. no tenderness at the base of the fifth metatarsal or the navicular. pulses are good and sensation is normal. there's a small abrasion over the lateral ankle.
+    [doctor] because you couldn't walk four steps and you're tender on the bone, we'll get an x-ray of the left ankle. we'll give you ibuprofen six hundred milligrams, ice and elevation, and since you have a scrape and your tetanus is probably more than ten years ago, we'll give you a tdap shot.
+  traps:
+    - {id: ED03-T1, category: LATERALITY_LOCATION, check: "LEFT ankle throughout (history, exam and x-ray order)"}
+    - {id: ED03-T2, category: HALLUCINATION, check: "Old right wrist fracture NOT documented as an acute injury or new complaint"}
+    - {id: ED03-T3, category: NEGATION, check: "No numbness; No tenderness at base of 5th metatarsal or navicular"}
+    - {id: ED03-T4, category: OMISSION, check: "Pulses are good, sensation is normal"}
+    - {id: ED03-T5, category: NUMERIC_MED, check: "Ibuprofen 600 mg"}
+    - {id: ED03-T6, category: OMISSION, check: "Tdap to be given; rationale (abrasion + tetanus >10 yrs or unknown)"}
+
+- id: ED04
+  title: Headache with self-corrected dose and pregnancy question
+  dialogue: |
+    [doctor] hi, i'm doctor lin. tell me about your headache.
+    [patient] it's my migraine, but it's lasted three days this time, which never happens. normally it's gone in a day.
+    [doctor] did it come on suddenly, like the worst headache of your life, reaching full strength in seconds?
+    [patient] no, not like that. it built up slowly, like my usual ones. it's just not going away.
+    [doctor] any fever, stiff neck, weakness, numbness, trouble speaking, or vision loss?
+    [patient] no fever, no stiff neck. i see the zigzag lines before it starts, which i always get. nothing else.
+    [doctor] what have you taken?
+    [patient] i took my sumatriptan, fifty milligrams, twice yesterday. and ibuprofen six hundred about three hours ago.
+    [doctor] any chance you could be pregnant?
+    [patient] um, my last period was about six weeks ago. i'm usually regular.
+    [doctor] okay, we'll check a pregnancy test. do you have any allergies?
+    [patient] no.
+    [doctor] your vitals are normal, blood pressure one twenty two over seventy eight. your neurologic exam is normal: normal strength, sensation, coordination, and your neck is supple.
+    [doctor] let's give you metoclopramide, twenty milligrams iv, sorry, ten milligrams iv, and diphenhydramine twenty five milligrams iv, and a liter of fluids. we'll get a urine pregnancy test before anything else. no more triptan for now.
+  traps:
+    - {id: ED04-T1, category: OMISSION, check: "Typical aura (visual zigzag lines) documented as usual pattern; duration 3 days vs usual 1 day; gradual onset"}
+    - {id: ED04-T2, category: NEGATION, check: "no fever, no neck stiffness, no focal deficits"}
+    - {id: ED04-T3, category: NUMERIC_MED, check: "Sumatriptan 50 mg x2 yesterday; ibuprofen 600 mg ~3 h ago"}
+    - {id: ED04-T4, category: OMISSION, check: "LMP ~6 weeks ago and pregnancy test ordered"}
+    - {id: ED04-T5, category: NUMERIC_MED, check: "Metoclopramide 10 mg IV (the corrected dose, not 20 mg)"}
+    - {id: ED04-T6, category: HALLUCINATION, check: "No diagnosis or plan beyond what was said (e.g., no invented 'status migrainosus' imaging plan or CT order)"}
+
+- id: ED05
+  title: Melena on an anticoagulant
+  dialogue: |
+    [doctor] hi mr. alvarez, what's going on?
+    [patient] my stools have been black for two days, like tar. and i got dizzy this morning when i stood up.
+    [doctor] have you vomited any blood or anything that looked like coffee grounds?
+    [patient] no, i haven't thrown up at all.
+    [doctor] any belly pain?
+    [patient] a little burning up here, in the upper part.
+    [doctor] what medications do you take?
+    [patient] i take apixaban, five milligrams twice a day, for my atrial fibrillation. and i've been taking a lot of ibuprofen for my back, like eight hundred three times a day for the last two weeks.
+    [doctor] okay. last dose of apixaban?
+    [patient] this morning around seven.
+    [doctor] any history of ulcers or bleeding?
+    [patient] no, never.
+    [doctor] do you drink alcohol?
+    [patient] a couple beers on the weekend.
+    [doctor] your heart rate is one oh six, blood pressure one oh four over sixty two, and when you stood up it dropped to eighty eight over fifty. rectal exam shows black tarry stool that tests positive for blood.
+    [doctor] i think you're bleeding from your stomach or upper intestine, possibly from the ibuprofen. we'll put in two large iv lines, check a blood count, type and crossmatch, coagulation studies, start an iv proton pump inhibitor, and call gastroenterology for an endoscopy. hold the apixaban and stop the ibuprofen.
+  traps:
+    - {id: ED05-T1, category: NEGATION, check: "No hematemesis / no coffee-ground emesis / no vomiting"}
+    - {id: ED05-T2, category: OMISSION, check: "Apixaban 5 mg BID for AFib with last dose this morning ~7 am"}
+    - {id: ED05-T3, category: NUMERIC_MED, check: "Ibuprofen 800 mg TID x 2 weeks"}
+    - {id: ED05-T4, category: NUMERIC_MED, check: "Orthostatic drop documented: 104/62 to 88/50; HR 106"}
+    - {id: ED05-T5, category: OMISSION, check: "Plan: hold apixaban, stop ibuprofen, 2 large-bore IVs, CBC, type and crossmatch, coags, IV PPI, GI consult for endoscopy"}
+    - {id: ED05-T6, category: HALLUCINATION, check: "No invented transfusion, reversal agent or hemoglobin value"}
+    - {id: ED05-T7, category: CERTAINTY, check: "Cause documented as uncertain: NSAIDs a POSSIBLE cause; NOT a confirmed peptic ulcer or confirmed NSAID-induced ulcer (endoscopy pending)"}
+
+- id: ED06
+  title: Heart failure exacerbation after running out of diuretic
+  dialogue: |
+    [doctor] hi mrs. chen, what brought you in?
+    [patient] i can't breathe when i lie down. i've been sleeping in my recliner for three nights.
+    [doctor] any chest pain?
+    [patient] no chest pain.
+    [doctor] have you gained weight?
+    [patient] four pounds in three days. my feet are like balloons.
+    [doctor] are you taking your water pill?
+    [patient] the furosemide? i ran out five days ago. the pharmacy said it needed a new prescription and i haven't been able to reach my doctor.
+    [doctor] what dose were you on?
+    [patient] forty milligrams, once a day in the morning.
+    [doctor] any other medications?
+    [patient] carvedilol, twelve and a half twice a day, and spironolactone twenty five.
+    [patient] my grandson just started college, did i tell you? he's studying engineering.
+    [doctor] that's wonderful. any cough?
+    [patient] a little dry cough at night.
+    [doctor] okay. your oxygen is ninety one percent on room air, blood pressure one forty eight over eighty eight, heart rate ninety two. you have crackles at both lung bases, your neck veins are distended, and two plus pitting edema in both legs up to the knees.
+    [doctor] this looks like your heart failure acting up because you've been off the furosemide. we'll give you furosemide forty milligrams iv now, get a chest x-ray, bnp, basic metabolic panel, and a troponin, and put you on two liters of oxygen by nasal cannula. i'll get you a new prescription before you leave.
+  traps:
+    - {id: ED06-T1, category: OMISSION, check: "Ran out of furosemide 5 days ago (precipitant) documented"}
+    - {id: ED06-T2, category: NUMERIC_MED, check: "Home furosemide 40 mg PO daily; ED furosemide 40 mg IV (route differs)"}
+    - {id: ED06-T3, category: NUMERIC_MED, check: "Carvedilol 12.5 mg BID; spironolactone 25 mg"}
+    - {id: ED06-T4, category: NEGATION, check: "No chest pain"}
+    - {id: ED06-T5, category: NUMERIC_MED, check: "4 lb weight gain over 3 days; SpO2 91% RA"}
+    - {id: ED06-T6, category: LATERALITY_LOCATION, check: "Bilateral crackles and BILATERAL 2+ edema to the knees"}
+    - {id: ED06-T7, category: OTHER, check: "Grandson/college conversation excluded"}
+
+- id: ED07
+  title: Possible acute stroke with right-sided weakness and corrected last-known-well time
+  dialogue: |
+    [doctor] hi, i'm doctor nguyen, one of the emergency physicians. mr. delgado, can you tell me what happened?
+    [patient] my arm... my right arm won't, won't do what i want. and my leg.
+    [doctor] okay. and you're his wife?
+    [wife] yes, i'm teresa. we were watching tv and he dropped his coffee cup, and when he tried to stand up his right leg just gave out.
+    [doctor] when was the last time you saw him completely normal?
+    [wife] it was around nine. no, wait, the show started at eight fifteen and he was fine then, he was laughing. he dropped the cup maybe ten, fifteen minutes into it. so eight fifteen he was normal.
+    [doctor] thank you, that's really important. so last known well eight fifteen.
+    [doctor] mr. delgado, any headache?
+    [patient] no. no headache.
+    [doctor] any numbness?
+    [patient] the arm feels... heavy. not numb.
+    [wife] his words are coming out slow too. that's not like him.
+    [doctor] has he ever had a stroke or anything like this before?
+    [wife] no, never. he has high blood pressure and diabetes. and he had surgery on his left shoulder last year, that's why he doesn't lift that arm very high, but that's old.
+    [doctor] what medications does he take?
+    [wife] lisinopril twenty milligrams, metformin one thousand twice a day, and atorvastatin.
+    [doctor] any blood thinners, like warfarin, eliquis, xarelto?
+    [wife] no, no blood thinners. just a baby aspirin sometimes, but he hasn't taken it in weeks.
+    [doctor] okay. his blood pressure is one eighty six over ninety eight, heart rate eighty eight and regular, oxygen ninety seven percent. fingerstick glucose is one twelve.
+    [doctor] on exam he has a right facial droop, weakness of the right arm, he can't hold it up against gravity, and weakness of the right leg. sensation is intact. his speech is slow and he's having trouble finding words, but he understands what i'm asking. the left side is strong, apart from the limited shoulder movement from his old surgery. nih stroke scale is eight.
+    [doctor] so, i'm concerned this is a stroke, but it's not confirmed yet. other things can look like this. we're calling a stroke alert. we'll get a ct of his head without contrast and a ct angiogram of the head and neck right now, labs including coags, and i'm calling neurology. depending on the ct, he may be a candidate for a clot-busting medication, but we won't decide that until we see the scan. no aspirin until the ct is back.
+  traps:
+    - {id: ED07-T1, category: LATERALITY_LOCATION, check: "RIGHT arm, RIGHT leg and RIGHT facial droop throughout; left side documented as strong"}
+    - {id: ED07-T2, category: OMISSION, check: "Focal deficits documented: right facial droop, right arm and right leg weakness, slow speech with word-finding difficulty"}
+    - {id: ED07-T3, category: TEMPORAL, check: "Last known well 8:15 pm (the corrected time, not 9:00), with onset ~10-15 min later"}
+    - {id: ED07-T4, category: MISATTRIBUTION, check: "Last-known-well time and witnessed onset attributed to wife as source"}
+    - {id: ED07-T5, category: HALLUCINATION, check: "Old left shoulder surgery NOT documented as an acute deficit or left-sided weakness"}
+    - {id: ED07-T6, category: OMISSION, check: "No anticoagulants; aspirin not taken in weeks"}
+    - {id: ED07-T7, category: NUMERIC_MED, check: "BP 186/98, glucose 112, NIHSS 8"}
+    - {id: ED07-T8, category: CERTAINTY, check: "Documented as suspected / possible / concern for stroke, NOT as a confirmed stroke or CVA diagnosis"}
+    - {id: ED07-T9, category: HALLUCINATION, check: "No CT result invented and no thrombolytic documented as given (decision pending CT)"}
+
+- id: ED08
+  title: Early pregnancy with left lower quadrant pain, no confirmed intrauterine pregnancy
+  dialogue: |
+    [doctor] hi, i'm doctor okafor. what brings you in today?
+    [patient] i've had this pain down low on the left side for about two days. it got worse this morning.
+    [doctor] can you point to it?
+    [patient] here.
+    [doctor] okay, left lower part of your belly. is it constant or does it come and go?
+    [patient] it's pretty constant, like a cramp. maybe a six out of ten.
+    [doctor] any vaginal bleeding?
+    [patient] a little spotting since yesterday. not like a period.
+    [doctor] when was your last menstrual period?
+    [patient] about seven weeks ago. i took a home pregnancy test two weeks ago and it was negative, so i didn't think i was pregnant. but i took another one last night and it was positive.
+    [doctor] okay. our urine test here is also positive, so you are pregnant. have you had an ultrasound yet in this pregnancy?
+    [patient] no, nothing yet. i haven't seen a doctor for it.
+    [doctor] any dizziness, fainting, or shoulder pain?
+    [patient] no dizziness. no shoulder pain.
+    [doctor] any previous pregnancies, or any history of infections in your tubes, or surgery on your belly?
+    [patient] no pregnancies before. i had chlamydia a few years ago, it was treated.
+    [doctor] any medications or allergies?
+    [patient] just ibuprofen for the pain, four hundred this morning. no allergies.
+    [doctor] your vitals are normal: blood pressure one sixteen over seventy two, heart rate eighty four, temperature thirty seven point one.
+    [doctor] on exam you're tender in the left lower abdomen, with no rebound or guarding. on the pelvic exam there's a small amount of blood, the cervix is closed, and you're tender on the left side.
+    [doctor] so, you're pregnant, but we don't know yet where the pregnancy is. it hasn't been confirmed to be in the uterus. with pain on one side and spotting, i'm concerned about the possibility of an ectopic pregnancy, which is a pregnancy outside the uterus, but we have not confirmed that either. we'll get a transvaginal ultrasound, a quantitative hcg blood level, a blood count, and your blood type. i'm also calling the ob-gyn team. please don't take any more ibuprofen for now.
+  traps:
+    - {id: ED08-T1, category: NEGATION, check: "Pregnancy documented as POSITIVE; the negative home test 2 weeks ago is NOT recorded as current status (no 'not pregnant')"}
+    - {id: ED08-T2, category: OMISSION, check: "Pregnancy status documented at all: positive urine hCG, LMP ~7 weeks ago"}
+    - {id: ED08-T3, category: LATERALITY_LOCATION, check: "LEFT lower quadrant pain and LEFT-sided adnexal tenderness"}
+    - {id: ED08-T4, category: NEGATION, check: "No dizziness, no syncope, no shoulder pain; no rebound or guarding"}
+    - {id: ED08-T5, category: OMISSION, check: "Risk factor documented: prior treated chlamydia; G1 (no prior pregnancies)"}
+    - {id: ED08-T6, category: CERTAINTY, check: "Pregnancy location documented as unknown / IUP not yet confirmed (no 'intrauterine pregnancy' stated as fact)"}
+    - {id: ED08-T7, category: CERTAINTY, check: "Documented as possible / concern for / rule out ectopic pregnancy, NOT as a confirmed ectopic pregnancy"}
+    - {id: ED08-T8, category: HALLUCINATION, check: "No ultrasound finding or hCG value invented (both ordered)"}
+    - {id: ED08-T9, category: OMISSION, check: "Plan: transvaginal ultrasound, quantitative hCG, CBC, blood type, OB-GYN consult, hold ibuprofen"}
