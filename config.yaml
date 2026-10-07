@@ -29,7 +29,7 @@ generation:
 # The judge. Uses a different model family from the one that writes the notes,
 # to reduce self-preference bias.
 judge:
-  provider: anthropic
+  provider: openai
   model: gpt-6.1-sol
   prompt: prompts/judge.txt
   temperature: null
