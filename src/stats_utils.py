@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy.stats import binomtest, norm
+from scipy.stats import binomtest, norm, wilcoxon
 from sklearn.metrics import cohen_kappa_score
 
 from .common import ANN, OUT, read_jsonl, taxonomy_codes
@@ -44,10 +44,13 @@ def note_level(notes: pd.DataFrame, errs: pd.DataFrame) -> pd.DataFrame:
     base = notes[["system", "encounter_id"]].drop_duplicates().copy()
     e = errs.copy()
     e["crit"] = (e.severity >= 3).astype(int)
+    e["modp"] = (e.severity >= 2).astype(int)
     g = e.groupby(["system", "encounter_id"])
-    agg = pd.DataFrame({"n_errors": g.size(), "n_critical": g.crit.sum()}).reset_index()
-    out = base.merge(agg, how="left", on=["system", "encounter_id"]).fillna({"n_errors": 0, "n_critical": 0})
+    agg = pd.DataFrame({"n_errors": g.size(), "n_critical": g.crit.sum(), "n_moderate_plus": g.modp.sum()}).reset_index()
+    out = base.merge(agg, how="left", on=["system", "encounter_id"]).fillna(
+        {"n_errors": 0, "n_critical": 0, "n_moderate_plus": 0})
     out["any_error"] = (out.n_errors > 0).astype(int)
+    out["any_moderate_plus"] = (out.n_moderate_plus > 0).astype(int)
     out["any_critical"] = (out.n_critical > 0).astype(int)
     for code in taxonomy_codes():
         has = e[e.category == code].groupby(["system", "encounter_id"]).size().rename(f"cat_{code}")
@@ -96,6 +99,14 @@ def mcnemar_exact(x_ref, x_new) -> dict:
     c = int(((x_ref == 0) & (x_new == 1)).sum())   # new worse
     p = binomtest(b, b + c, 0.5).pvalue if b + c else 1.0
     return {"ref_only": b, "new_only": c, "p_value": p}
+
+
+def wilcoxon_paired(x_ref, x_new) -> float:
+    """Two-sided Wilcoxon signed-rank p-value for paired counts; 1.0 if every pair is tied."""
+    d = np.asarray(x_new, float) - np.asarray(x_ref, float)
+    if not np.any(d != 0):
+        return 1.0
+    return float(wilcoxon(d, zero_method="wilcox").pvalue)
 
 
 def noninferiority(x_ref, x_new, margin: float, alpha: float = 0.05, n_boot: int = 5000) -> dict:
