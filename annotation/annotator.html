@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Note Annotator</title>
+<style>
+  /* Dark is the default. The header button switches to light; the choice is remembered. */
+  :root { color-scheme:dark;
+          --bg:#14181b; --panel:#1b2024; --field:#232a2f; --ink:#e3e8eb; --muted:#93a0a8; --line:#2f373d;
+          --accent:#3fa58a; --accent-ink:#0d1f1a; --active:#1f3a33;
+          --crit:#f08a7f; --mod:#e9a95b; --min:#9aa9b0;
+          --doc:#7cc4f2; --doc-bg:rgba(124,196,242,.07); --pt:#f2c46d; --pt-bg:rgba(242,196,109,.07);
+          --oth:#c8a2f0; --oth-bg:rgba(200,162,240,.08); }
+  :root[data-theme="light"] { color-scheme:light;
+          --bg:#fbfaf7; --panel:#ffffff; --field:#ffffff; --ink:#1d2327; --muted:#6b7280; --line:#e4e1da;
+          --accent:#1f6f5c; --accent-ink:#ffffff; --active:#e8f3ef;
+          --crit:#b42318; --mod:#b54708; --min:#475467;
+          --doc:#175f99; --doc-bg:rgba(23,95,153,.06); --pt:#8a5a00; --pt-bg:rgba(176,120,0,.07);
+          --oth:#6b3fa0; --oth-bg:rgba(107,63,160,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 -apple-system, system-ui, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  header { display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:5; }
+  header h1 { font-size:15px; margin:0 12px 0 0; }
+  button, select, input, textarea { font:inherit; }
+  button { border:1px solid var(--line); background:var(--field); color:var(--ink); border-radius:6px; padding:5px 10px; cursor:pointer; }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:600; }
+  .muted { color:var(--muted); }
+  body { display:flex; flex-direction:column; height:100vh; }
+  main { display:grid; grid-template-columns:200px 1fr 1fr 360px; flex:1; min-height:0; }
+  #list { overflow:auto; border-right:1px solid var(--line); background:var(--panel); }
+  #list div { padding:6px 10px; border-bottom:1px solid var(--line); cursor:pointer; display:flex; justify-content:space-between; }
+  #list div.active { background:var(--active); font-weight:600; }
+  #list .done { color:var(--accent); }
+  .pane { overflow:auto; padding:12px 16px; border-right:1px solid var(--line); }
+  .pane h2 { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+  .pane pre { white-space:pre-wrap; font:13.5px/1.55 ui-monospace, Menlo, monospace; margin:0; }
+  #side { overflow:auto; padding:12px 14px; background:var(--panel); }
+  #side h3 { font-size:13px; margin:14px 0 6px; }
+  label { display:block; font-size:12px; color:var(--muted); margin-top:6px; }
+  #side input[type=text], #side textarea, #side select { width:100%; padding:5px 7px; border:1px solid var(--line); border-radius:6px; background:var(--field); color:var(--ink); }
+  header input[type=file] { color:var(--muted); }
+  /* Transcript: one block per speaker turn, colored by speaker */
+  #tx .turn { display:block; padding:2px 6px; margin:0 -6px 2px; border-left:3px solid transparent; border-radius:3px; }
+  #tx .spk { font-weight:700; }
+  #tx .doc { border-left-color:var(--doc); background:var(--doc-bg); } #tx .doc .spk { color:var(--doc); }
+  #tx .pt  { border-left-color:var(--pt);  background:var(--pt-bg); }  #tx .pt .spk  { color:var(--pt); }
+  #tx .oth { border-left-color:var(--oth); background:var(--oth-bg); } #tx .oth .spk { color:var(--oth); }
+  .legend { display:flex; gap:12px; font-size:11.5px; margin:-2px 0 8px; flex-wrap:wrap; }
+  .legend span::before { content:""; display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
+  .legend .l-doc::before { background:var(--doc); } .legend .l-pt::before { background:var(--pt); } .legend .l-oth::before { background:var(--oth); }
+  textarea { resize:vertical; min-height:38px; }
+  .err { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin-bottom:6px; font-size:12.5px; }
+  .sev1 { border-left:4px solid var(--min); } .sev2 { border-left:4px solid var(--mod); } .sev3 { border-left:4px solid var(--crit); }
+  .trap { font-size:12.5px; padding:5px 0; border-bottom:1px dashed var(--line); }
+  .trap select { width:auto !important; margin-top:3px; }
+  .row { display:flex; gap:8px; align-items:center; }
+  .def { font-size:12px; color:var(--muted); margin-top:4px; }
+  #empty { padding:40px; grid-column:1 / -1; }
+  @media (max-width: 1100px) { body { height:auto; } main { grid-template-columns:1fr; } #list { max-height:180px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Note Annotator</h1>
+  <label class="row" style="margin:0">Load tasks <input type="file" id="fileTasks" accept=".json"></label>
+  <span id="progress" class="muted"></span>
+  <span style="flex:1"></span>
+  <button id="prev">&larr; Prev</button><button id="next">Next &rarr;</button>
+  <button id="theme" title="Switch light / dark">Light mode</button>
+  <button class="primary" id="exportCsv">Export CSVs</button>
+  <button id="exportJson" title="Full backup of your progress">Backup</button>
+  <label class="row" style="margin:0" title="Restore a backup">Restore <input type="file" id="fileRestore" accept=".json"></label>
+</header>
+<main id="app">
+  <div id="empty" class="muted">
+    Load <code>annotation/tasks_main.json</code> to start. Progress autosaves in this browser;
+    use <b>Backup</b> regularly anyway. Tip: select text in the note or transcript to fill the quote fields.
+  </div>
+</main>
+
+<script>
+let DATA = null, STATE = null, cur = 0, tStart = Date.now();
+const $ = s => document.querySelector(s);
+const storeKey = () => "scribe-eval:" + DATA.set;
+
+function save() { try { localStorage.setItem(storeKey(), JSON.stringify(STATE)); } catch (e) {} }
+function load() { try { return JSON.parse(localStorage.getItem(storeKey()) || "null"); } catch (e) { return null; } }
+function blank() { const s = {}; DATA.tasks.forEach(t => s[t.uid] = {errors: [], traps: {}, quality: "", reviewed: false, seconds: 0}); return s; }
+
+function tick() { if (!DATA) return; const u = DATA.tasks[cur].uid; STATE[u].seconds += Math.round((Date.now() - tStart) / 1000); tStart = Date.now(); save(); }
+
+$("#fileTasks").onchange = async e => {
+  DATA = JSON.parse(await e.target.files[0].text());
+  STATE = Object.assign(blank(), load() || {});
+  cur = DATA.tasks.findIndex(t => !STATE[t.uid].reviewed); if (cur < 0) cur = 0;
+  build(); render();
+};
+$("#fileRestore").onchange = async e => {
+  if (!DATA) return alert("Load the tasks file first.");
+  const b = JSON.parse(await e.target.files[0].text());
+  if (b.set !== DATA.set) return alert("This backup is for set '" + b.set + "'.");
+  STATE = Object.assign(blank(), b.state); save(); render();
+};
+
+function build() {
+  $("#app").innerHTML = `
+    <div id="list"></div>
+    <div class="pane"><h2>Transcript</h2>
+      <div class="legend"><span class="l-doc">Clinician</span><span class="l-pt">Patient</span><span class="l-oth">Family / other</span></div>
+      <pre id="tx"></pre></div>
+    <div class="pane"><h2>AI-generated note</h2><pre id="nt"></pre></div>
+    <div id="side">
+      <div class="muted" id="meta"></div>
+      <h3>Add error</h3>
+      <label>Category</label><select id="cat">${DATA.categories.map(c => `<option value="${c.code}">${c.code} — ${c.name}</option>`).join("")}</select>
+      <div class="def" id="catdef"></div>
+      <label>Severity</label><select id="sev">${DATA.severity.map(s => `<option value="${s.level}">${s.level} — ${s.name}</option>`).join("")}</select>
+      <div class="def" id="sevdef"></div>
+      <label>Note text (select in note)</label><textarea id="ntxt"></textarea>
+      <label>Transcript evidence (select in transcript)</label><textarea id="ttxt"></textarea>
+      <label>Comment</label><input type="text" id="cmt">
+      <div class="row" style="margin-top:8px"><button class="primary" id="add">Add error</button><span class="muted">or Ctrl+Enter</span></div>
+      <h3>Errors logged</h3><div id="errs"></div>
+      <div id="trapbox"></div>
+      <h3>Overall</h3>
+      <label>Quality: how much editing before you'd sign?</label>
+      <select id="qual"><option value="">—</option><option value="5">5 sign as is</option><option value="4">4 trivial edits</option>
+        <option value="3">3 several edits</option><option value="2">2 major rewrite</option><option value="1">1 unusable</option></select>
+      <label class="row" style="margin-top:10px;color:var(--ink)"><input type="checkbox" id="rev"> Reviewed (all errors logged)</label>
+    </div>`;
+  const showDefs = () => {
+    $("#catdef").textContent = DATA.categories.find(c => c.code === $("#cat").value).definition;
+    $("#sevdef").textContent = DATA.severity.find(s => String(s.level) === $("#sev").value).definition;
+  };
+  $("#cat").onchange = showDefs; $("#sev").onchange = showDefs; showDefs();
+  $("#nt").onmouseup = () => { const s = String(getSelection()).trim(); if (s) $("#ntxt").value = s; };
+  $("#tx").onmouseup = () => { const s = String(getSelection()).trim(); if (s) $("#ttxt").value = s; };
+  $("#add").onclick = addErr;
+  $("#qual").onchange = () => { st().quality = $("#qual").value; save(); renderList(); };
+  $("#rev").onchange = () => {
+    if ($("#rev").checked && !st().quality) { alert("Set the quality rating first."); $("#rev").checked = false; return; }
+    const open = (DATA.tasks[cur].traps || []).filter(t => !st().traps[t.trap_id]);
+    if ($("#rev").checked && open.length) { alert(open.length + " trap check(s) not marked."); $("#rev").checked = false; return; }
+    st().reviewed = $("#rev").checked; save(); renderList();
+  };
+}
+const st = () => STATE[DATA.tasks[cur].uid];
+
+function addErr() {
+  st().errors.push({category: $("#cat").value, severity: +$("#sev").value, note_text: $("#ntxt").value.trim(),
+                    transcript_evidence: $("#ttxt").value.trim(), comment: $("#cmt").value.trim()});
+  $("#ntxt").value = $("#ttxt").value = $("#cmt").value = ""; save(); renderSide();
+}
+document.addEventListener("keydown", e => { if (DATA && e.key === "Enter" && (e.ctrlKey || e.metaKey)) addErr(); });
+
+const DOC = /^(doctor|dr|physician|clinician|provider|nurse|np|pa|md|attending|resident)\b/i;
+const PT = /^(patient|pt)\b/i;
+function renderTranscript(text) {
+  const box = $("#tx"); box.textContent = "";
+  let cls = "";
+  String(text).split("\n").forEach(line => {
+    const m = line.match(/^\s*\[([^\]]+)\]\s?(.*)$/);
+    if (m) cls = DOC.test(m[1].trim()) ? "doc" : PT.test(m[1].trim()) ? "pt" : "oth";
+    const div = document.createElement("span");
+    div.className = "turn " + (cls || "");
+    if (m) {
+      const spk = document.createElement("span"); spk.className = "spk"; spk.textContent = "[" + m[1] + "] ";
+      div.appendChild(spk); div.appendChild(document.createTextNode(m[2] + "\n"));
+    } else {
+      div.appendChild(document.createTextNode(line + "\n"));
+    }
+    box.appendChild(div);
+  });
+}
+
+// Theme: dark by default; remembered separately from annotation progress.
+const THEME_KEY = "scribe-eval:theme";
+function applyTheme(t) {
+  if (t === "light") document.documentElement.setAttribute("data-theme", "light");
+  else document.documentElement.removeAttribute("data-theme");
+  $("#theme").textContent = t === "light" ? "Dark mode" : "Light mode";
+}
+let theme = "dark";
+try { theme = localStorage.getItem(THEME_KEY) || "dark"; } catch (e) {}
+applyTheme(theme);
+$("#theme").onclick = () => { theme = theme === "light" ? "dark" : "light"; applyTheme(theme); try { localStorage.setItem(THEME_KEY, theme); } catch (e) {} };
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function renderList() {
+  const n = DATA.tasks.filter(t => STATE[t.uid].reviewed).length;
+  $("#progress").textContent = `${DATA.set}: ${n}/${DATA.tasks.length} reviewed`;
+  $("#list").innerHTML = DATA.tasks.map((t, i) => `<div data-i="${i}" class="${i === cur ? "active" : ""}">
+      <span>${t.order}. ${t.uid}</span><span class="${STATE[t.uid].reviewed ? "done" : "muted"}">${STATE[t.uid].reviewed ? "✓" : STATE[t.uid].errors.length || ""}</span></div>`).join("");
+  $("#list").querySelectorAll("div").forEach(d => d.onclick = () => go(+d.dataset.i));
+}
+function renderSide() {
+  const s = st(), t = DATA.tasks[cur];
+  $("#meta").textContent = `Note ${t.order} of ${DATA.tasks.length} · ${t.uid} · encounter ${t.encounter_id} · ${Math.round(s.seconds / 60)} min`;
+  $("#errs").innerHTML = s.errors.length ? s.errors.map((e, i) => `<div class="err sev${e.severity}"><b>${e.category}</b> · sev ${e.severity}
+      <button style="float:right;padding:0 6px" data-del="${i}">×</button>
+      ${e.note_text ? `<div>Note: “${esc(e.note_text)}”</div>` : ""}${e.transcript_evidence ? `<div class="muted">Transcript: “${esc(e.transcript_evidence)}”</div>` : ""}
+      ${e.comment ? `<div class="muted">${esc(e.comment)}</div>` : ""}</div>`).join("") : `<div class="muted">None yet.</div>`;
+  $("#errs").querySelectorAll("[data-del]").forEach(b => b.onclick = () => { s.errors.splice(+b.dataset.del, 1); save(); renderSide(); renderList(); });
+  $("#trapbox").innerHTML = (t.traps && t.traps.length) ? `<h3>Trap checklist</h3>` + t.traps.map(tr => `<div class="trap">
+      <b>${tr.trap_id}</b> <span class="muted">${tr.category}</span><div>${esc(tr.check)}</div>
+      <select data-trap="${tr.trap_id}"><option value="">—</option>
+      ${["pass", "fail", "na"].map(v => `<option ${s.traps[tr.trap_id] === v ? "selected" : ""}>${v}</option>`).join("")}</select></div>`).join("") : "";
+  $("#trapbox").querySelectorAll("[data-trap]").forEach(sel => sel.onchange = () => { s.traps[sel.dataset.trap] = sel.value; save(); });
+  $("#qual").value = s.quality; $("#rev").checked = s.reviewed;
+}
+function render() {
+  const t = DATA.tasks[cur];
+  renderTranscript(t.transcript); $("#nt").textContent = t.note;
+  renderList(); renderSide(); document.querySelectorAll(".pane").forEach(p => p.scrollTop = 0);
+}
+function go(i) { if (i < 0 || i >= DATA.tasks.length) return; tick(); cur = i; render(); }
+$("#prev").onclick = () => DATA && go(cur - 1);
+$("#next").onclick = () => DATA && go(cur + 1);
+setInterval(() => { if (DATA && document.visibilityState === "visible") { tick(); } }, 30000);
+
+function csv(rows, cols) {
+  const q = v => { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  return [cols.join(",")].concat(rows.map(r => cols.map(c => q(r[c])).join(","))).join("\n");
+}
+function download(name, text, type = "text/csv") {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click();
+}
+$("#exportCsv").onclick = () => {
+  if (!DATA) return; tick();
+  const errs = [], notes = [], traps = [];
+  DATA.tasks.forEach(t => { const s = STATE[t.uid];
+    notes.push({uid: t.uid, reviewed: s.reviewed ? 1 : 0, quality: s.quality, minutes: (s.seconds / 60).toFixed(1), n_errors: s.errors.length});
+    s.errors.forEach(e => errs.push({uid: t.uid, ...e}));
+    Object.entries(s.traps).forEach(([k, v]) => v && traps.push({uid: t.uid, trap_id: k, result: v}));
+  });
+  download(`human_errors_${DATA.set}.csv`, csv(errs, ["uid", "category", "severity", "note_text", "transcript_evidence", "comment"]));
+  download(`human_notes_${DATA.set}.csv`, csv(notes, ["uid", "reviewed", "quality", "minutes", "n_errors"]));
+  download(`human_traps_${DATA.set}.csv`, csv(traps, ["uid", "trap_id", "result"]));
+};
+$("#exportJson").onclick = () => { if (DATA) { tick(); download(`backup_${DATA.set}.json`, JSON.stringify({set: DATA.set, state: STATE}), "application/json"); } };
+</script>
+</body>
+</html>
