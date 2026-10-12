@@ -117,18 +117,50 @@ def noninferiority(x_ref, x_new, margin: float, alpha: float = 0.05, n_boot: int
             "margin": margin, "noninferior": bool(hi < margin)}
 
 
-def decide(x_ref, x_new, hypothesis: str, margin: float = 0.10, alpha: float = 0.05, n_boot: int = 5000) -> dict:
-    """Pre-specified one-sided test on an error-rate endpoint (lower is better).
+def newcombe_paired_ci(x_ref, x_new, alpha: float = 0.05) -> tuple[float, float, float]:
+    """Newcombe (1998, method 10) score CI for a paired difference in proportions, new - ref.
 
-    superiority:    candidate better if the upper bound of the (1 - 2*alpha) paired CI for (new - ref) < 0
-    noninferiority: candidate acceptable if that upper bound < margin
+    Better behaved than the bootstrap when there are few discordant pairs.
+    """
+    r, m = np.asarray(x_ref, int), np.asarray(x_new, int)
+    n = len(r)
+    a = int(((r == 1) & (m == 1)).sum()); b = int(((r == 1) & (m == 0)).sum())
+    c = int(((r == 0) & (m == 1)).sum()); d = int(((r == 0) & (m == 0)).sum())
+    p1, l1, u1 = wilson(a + b, n, alpha)          # reference
+    p2, l2, u2 = wilson(a + c, n, alpha)          # candidate
+    den = (a + b) * (c + d) * (a + c) * (b + d)
+    phi = (a * d - b * c) / np.sqrt(den) if den > 0 else 0.0
+    diff = p2 - p1
+    lo = diff - np.sqrt(max((p2 - l2) ** 2 - 2 * phi * (p2 - l2) * (u1 - p1) + (u1 - p1) ** 2, 0))
+    hi = diff + np.sqrt(max((u2 - p2) ** 2 - 2 * phi * (u2 - p2) * (p1 - l1) + (p1 - l1) ** 2, 0))
+    return diff, max(lo, -1.0), min(hi, 1.0)
+
+
+def decide(x_ref, x_new, hypothesis: str, margin: float = 0.10, alpha: float = 0.05, n_boot: int = 5000) -> dict:
+    """Pre-specified one-sided test on a per-note binary error endpoint (lower is better), paired by encounter.
+
+    superiority:    exact one-sided McNemar test (H1: candidate has fewer notes with the error);
+                    superior if p < alpha. This is the decision rule.
+    noninferiority: upper bound of the (1 - 2*alpha) Newcombe CI for (new - ref) < margin.
+
+    Also returns a two-sided 95% Newcombe CI for reporting.
     """
     if hypothesis not in ("superiority", "noninferiority"):
         raise ValueError("hypothesis must be 'superiority' or 'noninferiority'")
-    threshold = 0.0 if hypothesis == "superiority" else margin
-    est, lo, hi = paired_diff_ci(x_ref, x_new, n_boot=n_boot, alpha=2 * alpha)
-    return {"hypothesis": hypothesis, "diff_new_minus_ref": est, "ci_low": lo, "ci_high": hi,
-            "ci_level": 1 - 2 * alpha, "threshold": threshold, "met": bool(hi < threshold)}
+    r, m = np.asarray(x_ref, int), np.asarray(x_new, int)
+    b = int(((r == 1) & (m == 0)).sum())   # only reference had the error
+    c = int(((r == 0) & (m == 1)).sum())   # only candidate had the error
+    p_one_sided = binomtest(b, b + c, 0.5, alternative="greater").pvalue if b + c else 1.0
+    est, lo90, hi90 = newcombe_paired_ci(r, m, alpha=2 * alpha)
+    _, lo95, hi95 = newcombe_paired_ci(r, m, alpha=0.05)
+    if hypothesis == "superiority":
+        threshold, met = 0.0, bool(p_one_sided < alpha)
+    else:
+        threshold, met = margin, bool(hi90 < margin)
+    return {"hypothesis": hypothesis, "diff_new_minus_ref": est, "ref_only": b, "new_only": c,
+            "p_one_sided_exact_mcnemar": p_one_sided, "alpha_one_sided": alpha,
+            "ci_low": lo90, "ci_high": hi90, "ci_level": 1 - 2 * alpha,
+            "ci95_low": lo95, "ci95_high": hi95, "threshold": threshold, "met": met}
 
 
 # ---------------------------------------------------------------------------
