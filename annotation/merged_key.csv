@@ -1,0 +1,97 @@
+,uid,system,encounter_id,set,dataset,id,doctor_name,patient_gender,patient_age,patient_firstname,patient_familyname,cc,2nd_complaints
+0,M6d8fce,baseline,ED04,main,,,,,,,,,
+1,Mef21cb,grounded,D2N115,main,aci,ACI107,,male,40.0,jack,torres,neck pain,
+2,M438043,grounded,D2N112,main,aci,ACI024,,male,44.0,Matthew,Hill,back pain,
+3,M4adf04,grounded,D2N107,main,aci,ACI086,,male,39.0,bryan,brooks,Low back pain,
+4,Maf103a,grounded,ED01,main,,,,,,,,,
+5,M8da2fc,grounded,D2N090,main,virtassist,VA050,,male,62,Albert,Powell,ER follow-up ,depression;type 2 diabetes;kidney transplant
+6,M586767,grounded,D2N104,main,virtscribe,VS037,,female ,61,judy,gomez,Psoriatic arthritis,none
+7,Me8543c,baseline,D2N106,main,aci,ACI066,,male,45.0,kimberly,sullivan,Allergic asthma,
+8,Mca440a,baseline,D2N109,main,aci,ACI072,,female,36.0,stephanie,morales,Left ankle pain,Diabetes Type 2;hypertension
+9,M503846,grounded,D2N118,main,aci,ACI052,,female,,angela,,Kidney stone,hypertension;diabetes
+10,Mbe3233,baseline,D2N116,main,aci,ACI088,,male,56.0,bobby,flores,Right shoulder pain,Foot pain
+11,M85ab5b,baseline,D2N110,main,aci,ACI062,,male,43.0,wayne,jenkins,evaluation of right foot wound ,Diabetes 
+12,M52f3fc,baseline,D2N115,main,aci,ACI107,,male,40.0,jack,torres,neck pain,
+13,M27ca2b,baseline,D2N088,main,virtassist,VA045,,male,59,Andrew,Campbell,upper respiratory infection,depression;type two diabetes;hypertension
+14,M517626,grounded,D2N110,main,aci,ACI062,,male,43.0,wayne,jenkins,evaluation of right foot wound ,Diabetes 
+15,Mcfc728,baseline,D2N099,main,virtscribe,VS033,,male ,9-month,randy,gutierrez,Cough; nasal congestion; rhinorrhea,dandruff
+16,M987a6c,baseline,D2N098,main,virtscribe,VS017,isabella,male ,64,jose,james,left shoulder and elbow pain ,wrist pain 
+17,M86ef5d,baseline,D2N090,main,virtassist,VA050,,male,62,Albert,Powell,ER follow-up ,depression;type 2 diabetes;kidney transplant
+18,M5847c5,grounded,D2N099,main,virtscribe,VS033,,male ,9-month,randy,gutierrez,Cough; nasal congestion; rhinorrhea,dandruff
+19,Mbb70a7,grounded,D2N119,main,aci,ACI043,,female,,Betty,,asthma,
+20,M10204d,baseline,D2N091,main,virtassist,VA015,,male,54,Jerry,Nguyen,annual exam,osteoporosis;multiple sclerosis
+21,M8af4b6,baseline,D2N121,main,aci,ACI017,,male,,,,right knee pain,hypertension
+22,Mbfd338,baseline,D2N111,main,aci,ACI015,,male,57.0,William,Russell,right knee injury,hypertension;diabetes type 2
+23,M120334,grounded,D2N109,main,aci,ACI072,,female,36.0,stephanie,morales,Left ankle pain,Diabetes Type 2;hypertension
+24,M055fbf,grounded,D2N121,main,aci,ACI017,,male,,,,right knee pain,hypertension
+25,Md5835e,baseline,D2N100,main,virtscribe,VS003,juan price,female ,15,kayla,ward,acne,moles
+26,M26732d,grounded,D2N106,main,aci,ACI066,,male,45.0,kimberly,sullivan,Allergic asthma,
+27,Me20e7d,grounded,D2N089,main,virtassist,VA046,,female,52,Andrea,Roberts,annual exam,RA;artrial fibrillation;reflux
+28,M81e8ad,grounded,D2N093,main,virtassist,VA017,,male,62,Lawrence,Walker,shortness of breath,type 1 diabetes;congestive heart failure;depression;reflux
+29,M43272e,baseline,ED06,main,,,,,,,,,
+30,Me24f81,baseline,D2N104,main,virtscribe,VS037,,female ,61,judy,gomez,Psoriatic arthritis,none
+31,M28961b,grounded,D2N100,main,virtscribe,VS003,juan price,female ,15,kayla,ward,acne,moles
+32,Maa05e9,grounded,D2N105,main,virtscribe,VS002,,female ,100,diana,scott,heart murmur,hypolipidemia; dizziness; lightheadedness 
+33,Mccedc6,grounded,D2N101,main,virtscribe,VS035,gonzales,female ,25,julia,jones,macromastia ,none
+34,M18b3c1,baseline,ED07,main,,,,,,,,,
+35,M325639,grounded,D2N103,main,virtscribe,VS000,hughes,female ,58,melissa,sanchez,follow up on mitral valve repair,none
+36,Ma9cae8,grounded,D2N111,main,aci,ACI015,,male,57.0,William,Russell,right knee injury,hypertension;diabetes type 2
+37,Mb865b3,baseline,ED08,main,,,,,,,,,
+38,M57ef2a,baseline,D2N097,main,virtassist,VA014,,female,66,Elizabeth,Peterson,annual exam,depression;hypertension
+39,M1bce5f,grounded,D2N113,main,aci,ACI077,,female,,jacqueline,,Hepatitis C,
+40,M4631d1,baseline,D2N096,main,virtassist,VA019,,female,44,,Anderson,left shoulder pain,
+41,M9bfe60,baseline,D2N119,main,aci,ACI043,,female,,Betty,,asthma,
+42,M15d9d0,baseline,ED01,main,,,,,,,,,
+43,Me9e9f9,baseline,ED05,main,,,,,,,,,
+44,Ma0c8f6,baseline,D2N093,main,virtassist,VA017,,male,62,Lawrence,Walker,shortness of breath,type 1 diabetes;congestive heart failure;depression;reflux
+45,Me94026,baseline,D2N124,main,aci,ACI000,michael,male,45.0,Jerry,Cook,right ankle injury ,
+46,Mdeeb68,grounded,D2N114,main,aci,ACI045,,female,33.0,Julie,Jenkins,headaches,
+47,Me5e1ee,grounded,D2N126,main,aci,ACI010,,female,44.0,Michelle,King,right knee injury,
+48,M1cb8b3,baseline,ED02,main,,,,,,,,,
+49,M357314,grounded,D2N116,main,aci,ACI088,,male,56.0,bobby,flores,Right shoulder pain,Foot pain
+50,M014a6c,grounded,D2N098,main,virtscribe,VS017,isabella,male ,64,jose,james,left shoulder and elbow pain ,wrist pain 
+51,M5e446a,grounded,D2N091,main,virtassist,VA015,,male,54,Jerry,Nguyen,annual exam,osteoporosis;multiple sclerosis
+52,M5ad883,baseline,D2N123,main,aci,ACI084,,male,56.0,tyler,green,Difficulty swallowing,Diabetes;High blood pressure
+53,Meb10ee,grounded,D2N092,main,virtassist,VA025,,female,43,,Martinez,right arm pain,allergies
+54,M7eae05,baseline,D2N107,main,aci,ACI086,,male,39.0,bryan,brooks,Low back pain,
+55,M8bac11,baseline,D2N092,main,virtassist,VA025,,female,43,,Martinez,right arm pain,allergies
+56,M7b80c1,baseline,D2N126,main,aci,ACI010,,female,44.0,Michelle,King,right knee injury,
+57,M1a2195,baseline,D2N105,main,virtscribe,VS002,,female ,100,diana,scott,heart murmur,hypolipidemia; dizziness; lightheadedness 
+58,Meb6f22,baseline,D2N125,main,aci,ACI033,cruz,male,54.0,,edwards,Right-sided facial pain,
+59,M391233,grounded,D2N120,main,aci,ACI098,,male,41.0,larry,garcia,back pain,
+60,Maf4629,grounded,D2N096,main,virtassist,VA019,,female,44,,Anderson,left shoulder pain,
+61,M054c79,grounded,D2N124,main,aci,ACI000,michael,male,45.0,Jerry,Cook,right ankle injury ,
+62,M72ec72,baseline,D2N127,main,aci,ACI008,,male,46.0,Brandon,Green,neck pain,body spasms;arm and leg numbness
+63,M4a8505,grounded,D2N094,main,virtassist,VA023,,female,42,,James,right index finger pain,chronic constipation;hx appendectomy
+64,M495235,grounded,D2N102,main,virtscribe,VS038,,female,41,kelly,wood,hematuria,Chronic urolithiasis
+65,M622c21,grounded,ED02,main,,,,,,,,,
+66,Mad2795,baseline,ED03,main,,,,,,,,,
+67,M4f9279,baseline,D2N117,main,aci,ACI047,,male,45.0,mark,jackson,elbow pain,
+68,M5b0551,baseline,D2N102,main,virtscribe,VS038,,female,41,kelly,wood,hematuria,Chronic urolithiasis
+69,Mcfc1b4,grounded,D2N117,main,aci,ACI047,,male,45.0,mark,jackson,elbow pain,
+70,M218702,grounded,D2N097,main,virtassist,VA014,,female,66,Elizabeth,Peterson,annual exam,depression;hypertension
+71,M6a9581,grounded,ED08,main,,,,,,,,,
+72,M2aacd3,baseline,D2N095,main,virtassist,VA044,,female,34,Cheryl,Ramirez,back pain,hypertension
+73,M5e6c59,grounded,ED05,main,,,,,,,,,
+74,M2d3acd,baseline,D2N120,main,aci,ACI098,,male,41.0,larry,garcia,back pain,
+75,Mca257b,baseline,D2N089,main,virtassist,VA046,,female,52,Andrea,Roberts,annual exam,RA;artrial fibrillation;reflux
+76,M60a4cc,grounded,ED03,main,,,,,,,,,
+77,M602a02,grounded,D2N095,main,virtassist,VA044,,female,34,Cheryl,Ramirez,back pain,hypertension
+78,Mcabbc9,grounded,D2N088,main,virtassist,VA045,,male,59,Andrew,Campbell,upper respiratory infection,depression;type two diabetes;hypertension
+79,M655af0,grounded,ED07,main,,,,,,,,,
+80,M073ee4,baseline,D2N112,main,aci,ACI024,,male,44.0,Matthew,Hill,back pain,
+81,Mb59924,grounded,D2N108,main,aci,ACI009,,male,40.0,Gregory,Hernandez,right foot ulcer,
+82,M876996,baseline,D2N094,main,virtassist,VA023,,female,42,,James,right index finger pain,chronic constipation;hx appendectomy
+83,M335524,baseline,D2N101,main,virtscribe,VS035,gonzales,female ,25,julia,jones,macromastia ,none
+84,Mcb2bed,grounded,ED04,main,,,,,,,,,
+85,M13da9d,grounded,D2N122,main,aci,ACI060,,male,,kyle,,cough,rheumatoid arthritis 
+86,Mafa820,baseline,D2N113,main,aci,ACI077,,female,,jacqueline,,Hepatitis C,
+87,Macfcdd,baseline,D2N103,main,virtscribe,VS000,hughes,female ,58,melissa,sanchez,follow up on mitral valve repair,none
+88,M5b8d46,grounded,D2N125,main,aci,ACI033,cruz,male,54.0,,edwards,Right-sided facial pain,
+89,M85da47,baseline,D2N114,main,aci,ACI045,,female,33.0,Julie,Jenkins,headaches,
+90,M45530d,grounded,D2N123,main,aci,ACI084,,male,56.0,tyler,green,Difficulty swallowing,Diabetes;High blood pressure
+91,M83746a,baseline,D2N108,main,aci,ACI009,,male,40.0,Gregory,Hernandez,right foot ulcer,
+92,M5856da,grounded,ED06,main,,,,,,,,,
+93,M7a29d6,grounded,D2N127,main,aci,ACI008,,male,46.0,Brandon,Green,neck pain,body spasms;arm and leg numbness
+94,M3a55c9,baseline,D2N122,main,aci,ACI060,,male,,kyle,,cough,rheumatoid arthritis 
+95,Mb11c75,baseline,D2N118,main,aci,ACI052,,female,,angela,,Kidney stone,hypertension;diabetes
