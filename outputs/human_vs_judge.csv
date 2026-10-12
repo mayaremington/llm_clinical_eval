@@ -1,0 +1,41 @@
+order,uid,system,encounter_id,status,n_human,n_judge,human_categories,judge_categories,judge_status
+1,M6d8fce,baseline,ED04,both,2,1,HALLUCINATION(1); HALLUCINATION(1),TEMPORAL(2),ok
+2,Mef21cb,grounded,D2N115,judge only,0,1,,OMISSION(2),ok
+3,M438043,grounded,D2N112,neither,0,0,,,ok
+4,M4adf04,grounded,D2N107,neither,0,0,,,ok
+5,Maf103a,grounded,ED01,both,2,1,OMISSION(2); OMISSION(1),NUMERIC_MED(2),ok
+6,M8da2fc,grounded,D2N090,judge only,0,1,,TEMPORAL(2),ok
+7,M586767,grounded,D2N104,physician only (judge missed),1,0,SECTION(1),,ok
+8,Me8543c,baseline,D2N106,judge only,0,1,,MISATTRIBUTION(2),ok
+9,Mca440a,baseline,D2N109,physician only (judge missed),1,0,HALLUCINATION(1),,ok
+10,M503846,grounded,D2N118,neither,0,0,,,ok
+11,Mbe3233,baseline,D2N116,both,1,2,MISATTRIBUTION(1),HALLUCINATION(2); HALLUCINATION(1),ok
+12,M85ab5b,baseline,D2N110,physician only (judge missed),3,0,HALLUCINATION(1); HALLUCINATION(2); HALLUCINATION(1),,ok
+13,M52f3fc,baseline,D2N115,both,1,2,HALLUCINATION(1),TEMPORAL(2); HALLUCINATION(2),ok
+14,M27ca2b,baseline,D2N088,both,2,1,SECTION(1); MISATTRIBUTION(1),HALLUCINATION(2),ok
+15,M517626,grounded,D2N110,neither,0,0,,,ok
+18,M86ef5d,baseline,D2N090,physician only (judge missed),1,0,MISATTRIBUTION(1),,ok
+24,M120334,grounded,D2N109,neither,0,0,,,ok
+27,M26732d,grounded,D2N106,neither,0,0,,,ok
+30,M43272e,baseline,ED06,physician only (judge missed),2,0,HALLUCINATION(1); SECTION(1),,ok
+31,Me24f81,baseline,D2N104,both,4,1,HALLUCINATION(1); HALLUCINATION(1); HALLUCINATION(1); HALLUCINATION(1),HALLUCINATION(1),ok
+35,M18b3c1,baseline,ED07,physician only (judge missed),3,0,HALLUCINATION(1); SECTION(1); HALLUCINATION(1),,ok
+38,Mb865b3,baseline,ED08,both,3,2,HALLUCINATION(1); HALLUCINATION(1); HALLUCINATION(1),HALLUCINATION(2); HALLUCINATION(2),ok
+40,M1bce5f,grounded,D2N113,neither,0,0,,,ok
+43,M15d9d0,baseline,ED01,physician only (judge missed),4,0,HALLUCINATION(1); SECTION(1); HALLUCINATION(2); HALLUCINATION(1),,ok
+44,Me9e9f9,baseline,ED05,both,2,1,HALLUCINATION(1); HALLUCINATION(1),HALLUCINATION(1),ok
+49,M1cb8b3,baseline,ED02,physician only (judge missed),2,0,HALLUCINATION(1); HALLUCINATION(1),,ok
+50,M357314,grounded,D2N116,neither,0,0,,,ok
+55,M7eae05,baseline,D2N107,judge only,0,1,,TEMPORAL(1),ok
+66,M622c21,grounded,ED02,physician only (judge missed),1,0,HALLUCINATION(1),,ok
+67,Mad2795,baseline,ED03,physician only (judge missed),2,0,HALLUCINATION(1); HALLUCINATION(2),,ok
+72,M6a9581,grounded,ED08,neither,0,0,,,ok
+74,M5e6c59,grounded,ED05,physician only (judge missed),1,0,HALLUCINATION(1),,ok
+77,M60a4cc,grounded,ED03,neither,0,0,,,ok
+79,Mcabbc9,grounded,D2N088,neither,0,0,,,ok
+80,M655af0,grounded,ED07,neither,0,0,,,ok
+81,M073ee4,baseline,D2N112,judge only,0,2,,TEMPORAL(2); HALLUCINATION(2),ok
+85,Mcb2bed,grounded,ED04,neither,0,0,,,ok
+87,Mafa820,baseline,D2N113,both,3,1,HALLUCINATION(2); OMISSION(2); HALLUCINATION(1),OMISSION(2),ok
+93,M5856da,grounded,ED06,neither,0,0,,,ok
+96,Mb11c75,baseline,D2N118,physician only (judge missed),1,0,HALLUCINATION(1),,ok
