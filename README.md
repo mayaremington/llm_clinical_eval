@@ -50,25 +50,22 @@ The primary endpoint was amended from "≥1 major error" to "≥1 error of any s
 | **Baseline: NO error** | 0 | 3 | 3 (15%) |
 | **Total** | 4 (20%) | 16 (80%) | 20 |
 
-**Decision:** The grounded prompt is **superior** under the pre-specified rule (exact one-sided McNemar test, α = 0.05; one-sided p = 0.0001). The result also
-passes the stricter one-sided α = 0.025, which is equivalent to two-sided 0.05 (two-sided exact p = 0.0002). The 95% CI for the difference (−78.7 to −38.2 pp)
-excludes 0.
-CI method: Newcombe hybrid score interval for paired proportions.
+**Decision:** The grounded prompt is **superior**. p = 0.0001 is less than α = 0.05. 95% CI for the difference (−78.7 to −38.2 pp) excludes 0.
 
 ### 2) Secondary Endpoints
 #### a) Additional error metrics
 
-| endpoint          |   baseline |   grounded |   difference |   ci_low |   ci_high | test          |   p_value |   n_pairs |
-|:------------------|-----------:|-----------:|---------------------:|---------:|----------:|:--------------|----------:|----------:|
-| errors per note   |       1.85 |       0.25 |                -1.6  |   -2.05  |    -1.15  | Wilcoxon      |      0    |        20 |
-| ≥1 moderate or major error |       0.2  |       0.05 |                -0.15 |   -0.351 |     0.019 | McNemar exact |      0.25 |        20 |
-| ≥1 major error    |       0    |       0    |                 0    |   -0.161 |     0.161 | McNemar exact |      1    |        20 |
+| endpoint          |   baseline |   grounded |   difference |   ci_low |   ci_high |   p_value |   n_pairs |
+|:------------------|-----------:|-----------:|---------------------:|---------:|----------:|----------:|----------:|
+| errors per note   |       1.85 |       0.25 |                -1.6  |   -2.05  |    -1.15  |      0    |        20 |
+| ≥1 moderate or major error |       0.2  |       0.05 |                -0.15 |   -0.351 |     0.019 |      0.25 |        20 |
+| ≥1 major error    |       0    |       0    |                 0    |   -0.161 |     0.161 |      1    |        20 |
 
 #### b) Which error types does a grounded prompt change?
 
 ![Error profile by system](outputs/figures/error_profile.png)
 
-| category       |   baseline |   grounded |   diff |   ci_low |   ci_high |   mcnemar_p |
+| category       |   baseline |   grounded |   diff |   ci_low |   ci_high |   p_value |
 |:---------------|-----------:|-----------:|-------:|---------:|----------:|------------:|
 | HALLUCINATION  |       0.7  |       0.1  |  -0.6  |   -0.756 |    -0.337 |       0     |
 | SECTION        |       0.2  |       0.05 |  -0.15 |   -0.374 |     0.082 |       0.375 |
