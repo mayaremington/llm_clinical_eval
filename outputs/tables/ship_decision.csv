@@ -1,0 +1,2 @@
+hypothesis,diff_new_minus_ref,ref_only,new_only,p_one_sided_exact_mcnemar,alpha_one_sided,ci_low,ci_high,ci_level,ci95_low,ci95_high,threshold,met,ref,new,endpoint,n_pairs
+superiority,-0.6499999999999999,13,0,0.0001220703125,0.05,-0.7735780343583125,-0.42984663814848806,0.9,-0.7874038885408251,-0.3819606924702496,0.0,True,baseline,grounded,any_error,20

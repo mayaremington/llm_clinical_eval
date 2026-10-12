@@ -1,0 +1,4 @@
+endpoint,baseline,grounded,diff_new_minus_ref,ci_low,ci_high,test,p_value,n_pairs
+errors per note,1.85,0.25,-1.6,-2.05,-1.15,Wilcoxon,0.00024154631222424866,20
+≥1 moderate or major error,0.2,0.05,-0.15000000000000002,-0.3505075732065769,0.018828503241661604,McNemar exact,0.25,20
+≥1 major error,0.0,0.0,0.0,-0.16112515805281938,0.16112515805281938,McNemar exact,1.0,20
