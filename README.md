@@ -4,7 +4,7 @@
 **Key findings:** 
 - Adding grounding rules to the prompt cut the share of notes with ≥1 error from 85% to 20% (−65 pp, 95% CI −79 to −38; p = 0.0001; n = 20 paired encounters). No major errors occurred in either arm. 
 - Identified a prompt-dependent tradeoff between transcript fidelity and clinical terminology normalization: 
-    - Ungrounded notes converted symptoms and exam findings into medical terminology and diagnoses
+    - Baseline notes converted symptoms and exam findings into medical terminology and diagnoses
     - Grounded notes preserved source wording more closely, but in doing so failed to generate medical terms; this pattern could make them less effective for downstream coding and clinical decision-making
 - An LLM-as-judge failed to catch many of the errors documented by the physician with a sensitivity of 43% (95% CI 24% to 63%), PPV 64% (95% CI 39% to 84%), and kappa 0.16.
 
@@ -24,19 +24,16 @@
     - Each comes with a checklist of "traps" (62 in total), specific facts a correct note must get right (key details, negations, doses, who said what, etc).
 
 ## Approach
-**One model, two prompts.** Claude Sonnet 5.5 (`claude-sonnet-5-5`) writes a note from each transcript using either a *baseline* prompt or a *grounded* prompt. The grounded prompt adds rules: document only what was said, preserve negations, give exact doses, attribute statements to the right speaker, and use the correct note section. Both prompts specify the same section headings so the notes look alike. 20 encounters × 2 prompts = 40 notes.
+**One model, two prompts.** Claude Sonnet 5.5 (`claude-sonnet-5-5`) writes a note from each transcript using either a *baseline* prompt or a *grounded* prompt. The grounded prompt adds rules: document only what was said, preserve negations, give exact doses, attribute statements to the right speaker, use the correct note section, etc. Both prompts specify the same section headings so the notes look alike. 20 encounters × 2 prompts = 40 notes.
 - **Physician annotation (reference standard).** The author, blinded to which prompt produced each note, reviewed all 40 notes in random order and labeled each error with a category (10-category taxonomy) and a severity (1 minor, 2 moderate, 3 major).
-- **Pre-specified analysis.** The primary endpoint, statistical test, and α were committed to git before unblinding. One amendment was made before unblinding and is documented in [AMENDMENT.md](AMENDMENT.md).
-- **LLM-as-judge.** GPT 6.1 Sol (`gpt-6.1-sol`) labels errors in all 40 notes using the same taxonomy. It comes from a different model family than the note writer, which reduces self-preference bias. It is scored against the physician labels using sensitivity, PPV, and Cohen's κ.
+- **Pre-specified analysis.** The primary endpoint, statistical test, and α were committed to git before unblinding.
+- **LLM-as-judge.** GPT 6.1 Sol (`gpt-6.1-sol`) labels errors in all 40 notes using the same taxonomy. This LLM comes from a different model family than the note writer, which reduces self-preference bias. It is scored against the physician labels using sensitivity, PPV, and Cohen's κ.
 - **ROUGE.** Generated notes are compared with the ACI-Bench reference notes (12 encounters, 24 notes), and the scores are correlated with physician-labeled errors.
 
 ## Results  
 **Sample:** 20 encounters, each documented by both prompts (40 notes), annotated blind by one physician (taxonomy v1.0).
 
 ### 1) Primary endpoint: Notes with ≥1 error of any severity.** 
-
-The primary endpoint was amended from "≥1 major error" to "≥1 error of any severity" before unblinding, because there were no major errors in either arm.
-(see [AMENDMENT.md](AMENDMENT.md)).
 
 | Endpoint | N (pairs) | Baseline | Grounded | Difference, pp (95% CI) | p |
 |---|---:|---:|---:|---:|---:|
@@ -61,6 +58,11 @@ The primary endpoint was amended from "≥1 major error" to "≥1 error of any s
 | ≥1 moderate or major error |       0.2  |       0.05 |                -0.15 |   -0.351 |     0.019 |      0.25 |        20 |
 | ≥1 major error    |       0    |       0    |                 0    |   -0.161 |     0.161 |      1    |        20 |
 
+Error trap failures (synthetic ED cases only)
+- Baseline: 0
+- Grounded: 0
+
+
 #### b) Which error types does a grounded prompt change?
 
 ![Error profile by system](outputs/figures/error_profile.png)
@@ -83,30 +85,40 @@ Categories with zero errors in either arm:
 ![Prompt effect by category](outputs/figures/prompt_effect_by_category.png)
 
 #### c) Annotation decision log: tradeoff between transcript fidelity and clinical terminology normalization
-- Some ungrounded notes convert symptoms and exam findings into medical terminology and diagnoses
+- Some baseline notes convert symptoms and exam findings into medical terminology and diagnoses
 - Grounded notes preserve source wording more closely, but in doing so fail to generate medical terms; this pattern could make them less effective for downstream coding and clinical decision-making
 Examples:
 1) Migraine ED case: patient reports seeing "zigzag lines" prior to migraine headache onset
-    - Ungrounded documents this as "aura"; grounded just refers to it as "zigzag lines"
+    - Baseline documents this as "aura"; grounded just refers to it as "zigzag lines"
     - Downstream this affects PMHx and diagnosis:
         - Grounded: "Migraine"
-        - Ungrounded: "Migraine with visual aura"
+        - Baseline: "Migraine with visual aura"
 2) Stroke ED case: Chief complaint (CC) varies by prompt
     - Grounded: CC is verbatim and unnecessarily attributed to patient:
         - "Right arm and right leg not working properly (per patient)"
-    - Ungrounded: CC is in medical terminology, appropriately derived from the transcript:
+    - Baseline: CC is in medical terminology, appropriately derived from the transcript:
         - "Right arm and right leg weakness with slowed speech"
-3) CHF case: Only ungrounded note converts symptoms and physical exam findings into medical terms:
-    - Ungrounded:
+3) CHF case: Only baseline note converts symptoms and physical exam findings into medical terms:
+    - Baseline:
         - Patient reports "difficulty breathing lying down" --> appropriately converted to "orthopnea"
         - On exam, doctor notes "distended neck veins" --> appropriately becomes "jugular venous distension"
 
 #### d) Can an LLM-as-judge catch the errors a physician would?
+Physician-documented errors are the reference standard
+
+Findings: An LLM-as-judge failed to catch many of the errors documented by the physician with a sensitivity of 43% (95% CI 24% to 63%), PPV 64% (95% CI 39% to 84%), and kappa 0.16.
+
 
 | system   |   human_any_error_rate |   judge_any_error_rate |   human_major_rate |   judge_major_rate |   human_errors_per_note |   judge_errors_per_note |
 |:---------|-----------------------:|-----------------------:|-------------------:|-------------------:|------------------------:|------------------------:|
 | baseline |                   0.85 |                   0.55 |                  0 |                  0 |                    1.85 |                    0.75 |
 | grounded |                   0.2  |                   0.15 |                  0 |                  0 |                    0.25 |                    0.15 |
+
+|                     |   Judge: ≥1 error |   Judge: No error |   Total |
+|:--------------------|------------------:|------------------:|--------:|
+| Physician: ≥1 error |                 9 |                12 |      21 |
+| Physician: No error |                 5 |                14 |      19 |
+| Total               |                14 |                26 |      40 |
 
 | level    | target            |   n |   prevalence |   kappa |   sensitivity |   sens_lo |   sens_hi |     ppv |   ppv_lo |   ppv_hi |   specificity |   tp |   fp |   fn |   tn |
 |:---------|:------------------|----:|-------------:|--------:|--------------:|----------:|----------:|--------:|---------:|---------:|--------------:|-----:|-----:|-----:|-----:|
@@ -118,6 +130,15 @@ Examples:
 | category | MISATTRIBUTION    |  40 |        0.075 |  -0.039 |         0     |     0     |     0.561 |   0     |    0     |    0.793 |         0.973 |    0 |    1 |    3 |   36 |
 | category | SECTION           |  40 |        0.125 |   0     |         0     |     0     |     0.434 | nan     |  nan     |  nan     |         1     |    0 |    0 |    5 |   35 |
 
+#### e) How well does an automated overlap score (ROUGE) track clinical errors?
+**Sample**: Applies to the 12 ACI-Bench encounters only (they have reference notes). ROUGE was calculated by comparing overlap between the Claude-generated note and the reference note.
+
+Findings: ROUGE-L ranked the prompts in the opposite order of the physician: the baseline notes had slightly higher ROUGE-L scores than the grounded notes
+
+| Prompt | ROUGE-L vs reference | Notes with ≥1 error | Physician quality (1–5) |
+|---|---|---|---|
+| Baseline | 0.35 | 75% (9/12) | 4.1 |
+| Grounded | 0.32 | 8% (1/12) | 4.9 |
 
 ### Limitations
 
